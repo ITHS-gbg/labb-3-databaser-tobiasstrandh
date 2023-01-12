@@ -1,16 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Labb3_NET22.DataModels;
 
 public class QuestionModel
 {
-    public string Statement { get; }
-    public string[] Answers { get; }
-    public int CorrectAnswer { get; }
+    [BsonId] public ObjectId Id { get; set; }
 
-    
+    [BsonElement]
+    public string Statement { get; set; }
+
+    [BsonElement]
+    public string[] Answers { get; set; }
+
+    [BsonElement]
+    public int CorrectAnswer { get; set; }
+
+    [BsonElement]
+    public string Category { get; set; } = String.Empty;
+
+
     public QuestionModel(string statement, string[] answers, int correctAnswer)
     {
         Statement = statement;
@@ -19,6 +32,6 @@ public class QuestionModel
 
     }
 
-    
+
 }
 

@@ -1,308 +1,94 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Labb3_NET22.DataModels;
 using CommunityToolkit.Mvvm.Input;
+using Labb3_NET22.DataModels;
 using Labb3_NET22.Managers;
 
 namespace Labb3_NET22.ViewModel;
 
 public class CreateQuizViewModel : ObservableObject
 {
-    public ICommand SaveQuestionCommand { get; }
-
-    public ICommand NewQuestionCommand { get; }
-    
-    public ICommand ReturnToStartViewCommand { get; }
-
+    private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
 
-   
-
-    private readonly NavigationManager _navigationManager;
+    public ICommand NewQuizCommand { get; }
     public CreateQuizViewModel(QuizManger quizManger, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
-        
         _navigationManager = navigationManager;
 
-        SaveQuestionCommand = new RelayCommand(() => AddQuestion());
+        GetAllQuestions();
 
-
-       ReturnToStartViewCommand = new RelayCommand(() => ReturnToStartView());
-
-       NewQuestionCommand = new RelayCommand(() => NewQuestion() );
-
+        NewQuizCommand = new RelayCommand(() => NewQuiz());
     }
 
-    
-
-    public void NewQuestion()
+    public void GetAllQuestions()
     {
-        CanSaveQuiz = false;
-        CanCloseCreateQuiz = false;
-        CanFillQuestionBoxes = true;
-
+        AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
     }
 
-
-    public async Task ReturnToStartView()
+    public void NewQuiz()
     {
-        await _quizManger.JsonSave();
-        _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
+        var newQuiz = new QuizModel(){Questions = QuizQuestions, QuizTitle = QuizName};
+
+        _quizManger.MongoDbSaveQuiz(newQuiz);
     }
 
-  
+    private IEnumerable<QuestionModel> _allQuestions;
 
-    public async Task AddQuestion() 
+    public IEnumerable<QuestionModel> AllQuestions
     {
-        if (SaveButtonName == "Save Title")
-        {
-            _quizManger.CurrentQuiz = new QuizModel(QuizTitle);
-            await _quizManger.JsonSave();
-            
-            SaveButtonName = "Save Question";
-            CanSaveQuiz = false;
-            CantChangeTitle = false;
-            CanFillQuestionBoxes = true;
-        }
-
-
-        else
-        {
-            var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
-
-            Correct();
-
-            _quizManger.CurrentQuiz.AddQuestion(QuestionStatment, QuestionCorrectAnswer, QuizAnswers);
-
-            
-
-            #region stringEmpty
-            QuestionStatment = string.Empty;
-
-            QuestionAnswerOne = string.Empty;
-            QuestionAnswerTwo = string.Empty;
-            QuestionAnswerThree = string.Empty;
-
-            CorrectAnswerOne = false;
-            CorrectAnswerTwo = false;
-            CorrectAnswerThree = false;
-
-            #endregion
-            CanSaveQuiz = false;
-            CanNewQuestion = true;
-            CanCloseCreateQuiz = true;
-            CantChangeTitle = false;
-            CanFillQuestionBoxes = false;
-        }
-    }
-
-   
-    public int QuestionCorrectAnswer { get; set; }
-    void Correct()
-    {
-        if (CorrectAnswerOne == true)
-        {
-            QuestionCorrectAnswer = 0;
-        }
-
-        else if (CorrectAnswerTwo == true)
-        {
-            QuestionCorrectAnswer = 1;
-        }
-
-        else if (CorrectAnswerThree == true)
-        {
-            QuestionCorrectAnswer = 2;
-        }
-    }
-
-
-    private string _quizTitle;
-
-    public string QuizTitle
-    {
-        get { return _quizTitle; }
+        get { return _allQuestions; }
         set
         {
-            SetProperty(ref _quizTitle, value);
-            CheckTitleBox();
+            SetProperty(ref _allQuestions, value);
         }
     }
 
-    public void CheckTitleBox()
+    private string _quizName;
+
+    public string QuizName
     {
-        if (QuizTitle != string.Empty)
-        {
-            CanSaveQuiz = true;
-        }
+        get { return _quizName; }
+        set { SetProperty(ref _quizName, value); }
     }
 
-    private string _saveButtonName = "Save Title";
+    private QuestionModel? _questionToNewQuiz;
 
-    public string SaveButtonName
+    public QuestionModel? QuestionToNewQuiz
     {
-        get { return _saveButtonName; }
-        set { SetProperty(ref _saveButtonName, value); }
-    }
-
-    private string _questionStatment = String.Empty;
-
-    public string QuestionStatment
-    {
-        get { return _questionStatment; }
+        get { return _questionToNewQuiz; }
         set
         {
-            SetProperty(ref _questionStatment, value);
-            CheckAllBoxes();
-        }
-    }
-
-    private string _questionAnswerOne = String.Empty;
-
-    public string QuestionAnswerOne
-    {
-        get { return _questionAnswerOne; } 
-        set
-        {
-            SetProperty(ref _questionAnswerOne, value);
-            CheckAllBoxes();
-        }
-    }
-
-    private string _questionAnswerTwo = String.Empty;
-
-    public string QuestionAnswerTwo
-    {
-        get { return _questionAnswerTwo; }
-        set
-        {
-            SetProperty(ref _questionAnswerTwo, value);
-            CheckAllBoxes();
-        }
-    }
-
-    private string _questionAnswerThree = String.Empty;
-
-    public string QuestionAnswerThree
-    {
-        get { return _questionAnswerThree; }
-        set
-        {
-            SetProperty(ref _questionAnswerThree, value);
-            CheckAllBoxes();
-        }
-    }
+            SetProperty(ref _questionToNewQuiz, value);
 
 
-
-    public void CheckAllBoxes()
-    {
-        if (QuestionAnswerOne != String.Empty)
-        {
-            if (QuestionAnswerTwo != String.Empty )
+            if (QuestionToNewQuiz != null)
             {
-                if (QuestionAnswerThree != String.Empty)
+                foreach (var author in QuizQuestions!)
                 {
-                    if (QuestionStatment != String.Empty)
+                    if (author.Id == QuestionToNewQuiz.Id)
                     {
-                        if (QuizTitle != String.Empty)
-                        {
-                            if (CorrectAnswerOne == true || CorrectAnswerTwo == true || CorrectAnswerThree == true)
-                            {
-                                CanSaveQuiz = true;
-                                CanNewQuestion = false;
-                            }
-                        }
+                        return;
                     }
                 }
+
+                QuizQuestions.Add(QuestionToNewQuiz);
             }
+
         }
     }
 
+    private ObservableCollection<QuestionModel>? _quizQuestions = new ObservableCollection<QuestionModel>();
 
-    private bool _correctAnswerOne;
-
-    public bool CorrectAnswerOne
+    public ObservableCollection<QuestionModel>? QuizQuestions
     {
-        get { return _correctAnswerOne; }
+        get { return _quizQuestions; }
         set
         {
-            SetProperty(ref _correctAnswerOne, value);
-            CheckAllBoxes();
+            SetProperty(ref _quizQuestions, value);
         }
     }
-
-    private bool _correctAnswerTwo;
-
-    public bool CorrectAnswerTwo
-    {
-        get { return _correctAnswerTwo; }
-        set
-        {
-            SetProperty(ref _correctAnswerTwo, value);
-            CheckAllBoxes();
-        }
-    }
-
-    private bool _correctAnswerThree;
-
-    public bool CorrectAnswerThree
-    {
-        get { return _correctAnswerThree; }
-        set
-        {
-            SetProperty(ref _correctAnswerThree, value);
-            CheckAllBoxes();
-        }
-    }
-
-    private bool _canCloseCreateQuiz = false;
-
-    public bool CanCloseCreateQuiz
-    {
-        get { return _canCloseCreateQuiz; }
-        set { SetProperty(ref _canCloseCreateQuiz, value); }
-    }
-
-    private bool _canFillQuestionBoxes = false;
-
-    public bool CanFillQuestionBoxes
-    {
-        get { return _canFillQuestionBoxes; }
-        set { SetProperty(ref _canFillQuestionBoxes, value); }
-    }
-
-    private bool _canSaveQuiz = false;
-
-    public bool CanSaveQuiz
-    {
-        get { return _canSaveQuiz; }
-        set { SetProperty(ref _canSaveQuiz, value); }
-    }
-
-    private bool _canNewQuestion = false;
-
-    public bool CanNewQuestion
-    {
-        get { return _canNewQuestion; }
-        set { SetProperty(ref _canNewQuestion, value);  }
-    }
-
-    private bool _cantChangeTitle = true;
-
-    public bool CantChangeTitle
-    {
-        get { return _cantChangeTitle; }
-        set { SetProperty(ref _cantChangeTitle, value); }
-    }
-
-
-
-
-    
-
 }

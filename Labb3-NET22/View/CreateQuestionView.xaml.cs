@@ -18,11 +18,13 @@ namespace Labb3_NET22.View
     /// <summary>
     /// Interaction logic for CreateQuizView.xaml
     /// </summary>
-    public partial class CreateQuizView : UserControl
+    public partial class CreateQuestionView: UserControl
     {
-        public CreateQuizView()
+        public CreateQuestionView()
         {
             InitializeComponent();
         }
+
+       
     }
 }

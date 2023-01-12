@@ -12,8 +12,8 @@
         
 
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type viewmodels:CreateQuizViewModel}">
-                <views:CreateQuizView />
+            <DataTemplate DataType="{x:Type viewmodels:CreateQuestionViewModel}">
+                <views:CreateQuestionView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:StartViewModel}">
                 <views:StartView />
@@ -26,6 +26,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:EditViewModel}">
                 <views:EditView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:CreateQuizViewModel}">
+                <views:CreateQuizView />
             </DataTemplate>
         </Grid.Resources>
 

@@ -20,28 +20,28 @@ public class StartViewModel : ObservableObject
         _quizManger = quizManger;
         _navigationManager = navigationManager;
        
-        DefaultQuiz();
+        //DefaultQuiz();
 
         
 
 
-        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _navigationManager));
+        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuestionViewModel(_quizManger, _navigationManager));
 
-        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new ChooseQuizViewModel(_quizManger, _navigationManager));
+        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _navigationManager));
 
         NavigateEditQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new EditViewModel(_quizManger, _navigationManager));
     }
 
     
 
-    private async Task DefaultQuiz()
-    {
-        _quizManger.CurrentQuiz = new QuizModel("tobbesquiz");
+    //private async Task DefaultQuiz()
+    //{
+    //    //_quizManger.CurrentQuiz = new QuizModel("tobbesquiz");
 
-        _quizManger.CurrentQuiz.PopulateDefaultQuiz();
+    //    _quizManger.CurrentQuiz.PopulateDefaultQuiz();
 
-        await Task.Run((() => _quizManger.JsonDefaultQuizSave()));
+    //    await Task.Run((() => _quizManger.JsonDefaultQuizSave()));
         
-    }
+    //}
 
 }

@@ -6,11 +6,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Labb3_NET22.DataModels;
 
 public class QuizModel
 {
+    [BsonId] public ObjectId Id { get; set; }
+
+    [BsonElement] public string QuizTitle { get; set; }
+
+
     private IEnumerable<QuestionModel> _questions;
 
     [JsonInclude]
@@ -39,7 +46,7 @@ public class QuizModel
         _questions = new List<QuestionModel>();
     }
 
-    
+
 
     private List<int> NumberList { get; set; } = new List<int>();
     private QuestionModel Question { get; set; }

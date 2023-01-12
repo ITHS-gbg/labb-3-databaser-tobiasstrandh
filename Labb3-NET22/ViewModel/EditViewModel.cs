@@ -48,7 +48,7 @@ public class EditViewModel : ObservableObject
 
         _quizManger.CurrentQuiz.EditQuestion(QuestionIndex, QuestionStatment, QuestionCorrectAnswer, QuizAnswers);
 
-        await _quizManger.JsonSave();
+        //await _quizManger.MongoDbSaveQuestion();
 
         SetList();
     }
@@ -56,7 +56,7 @@ public class EditViewModel : ObservableObject
     {
         
         _quizManger.CurrentQuiz.RemoveQuestion(QuestionIndex);
-        await _quizManger.JsonSave();
+        //await _quizManger.MongoDbSaveQuestion();
 
         QuestionStatment = string.Empty;
 

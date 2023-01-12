@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Labb3_NET22.DataModels;
+using MongoDB.Driver;
 
 namespace Labb3_NET22.Managers;
 
@@ -26,25 +27,42 @@ public class QuizManger
 
     public event Action CurrentQuizChanged;
 
-    public async Task JsonSave()
+    private readonly IMongoCollection<QuizModel> _collectionQuiz;
+
+    private readonly IMongoCollection<QuestionModel> _collectionQuestion;
+
+    public QuizManger()
+    {
+        var hostname = "localhost";
+        var databaseName = "TobiasQuiz";
+        var connectionString = $"mongodb://{hostname}:27017";
+
+        var client = new MongoClient(connectionString);
+        var database = client.GetDatabase(databaseName);
+
+        _collectionQuiz = database.GetCollection<QuizModel>("quiz", new MongoCollectionSettings() { AssignIdOnInsert = true });
+
+        _collectionQuestion = database.GetCollection<QuestionModel>("question", new MongoCollectionSettings() { AssignIdOnInsert = true });
+    }
+
+    public async Task MongoDbSaveQuestion(QuestionModel question)
     {
 
-        var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TobiasQuizApp", $"{CurrentQuiz.Title}.json");
+       _collectionQuestion.InsertOne(question);
+
+       // CurrentQuizChanged?.Invoke();
+
+    }
+
+    public IEnumerable<QuestionModel> GetAllQuestionsFromMongoDb()
+    {
+       return _collectionQuestion.Find(_ => true).ToEnumerable();
+    }
 
 
-        var json = await Task.Run((() => JsonSerializer.Serialize(CurrentQuiz, new JsonSerializerOptions() { WriteIndented = true })));
-
-
-        await using StreamWriter sw = new StreamWriter(path);
-
-
-        sw.WriteLine(json);
-
-
-        CurrentQuizChanged?.Invoke();
-
-
-
+    public void MongoDbSaveQuiz(QuizModel quiz)
+    {
+        _collectionQuiz.InsertOne(quiz);
     }
 
     public async Task JsonDefaultQuizSave()
