@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="Labb3_NET22.View.ChooseQuizView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Labb3_NET22.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Labb3_NET22.ViewModel"
+    d:DataContext="{d:DesignInstance viewModels:ChooseQuizViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+
+    <Grid Background="#FF656565">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="15" />
+
+        <Button
+            Grid.Row="3"
+            Grid.Column="0"
+            Command="{Binding ReturnToStartViewCommand}"
+            FontSize="10">
+            Press here to go back to start.
+        </Button>
+
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Command="{Binding GoToQuizViewCommand}"
+            FontSize="10"
+            IsEnabled="{Binding CheckQuizStatus}">
+            Press here to continue
+        </Button>
+
+        <ListView
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            Grid.ColumnSpan="1"
+            ItemsSource="{Binding FileTitles}"
+            SelectedItem="{Binding QuizTitle}" />
+
+
+    </Grid>
+</UserControl>

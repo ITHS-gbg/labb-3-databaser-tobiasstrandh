@@ -1,0 +1,35 @@
+﻿<Window x:Class="Labb3_NET22.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Labb3_NET22"
+        xmlns:views="clr-namespace:Labb3_NET22.View"
+        xmlns:viewmodels="clr-namespace:Labb3_NET22.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="801">
+    <Grid>
+        
+
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type viewmodels:CreateQuizViewModel}">
+                <views:CreateQuizView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:StartViewModel}">
+                <views:StartView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:ChooseQuizViewModel}">
+                <views:ChooseQuizView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:QuizViewModel}">
+                <views:QuizView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:EditViewModel}">
+                <views:EditView />
+            </DataTemplate>
+        </Grid.Resources>
+
+        <ContentControl Content="{Binding CurrentViewModel}" />
+
+    </Grid>
+</Window>
