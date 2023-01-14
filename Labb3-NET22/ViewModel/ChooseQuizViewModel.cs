@@ -33,11 +33,11 @@ public class ChooseQuizViewModel : ObservableObject
 
     }
 
-    public async Task GoToQuizView()
+    public void GoToQuizView()
     {
 
-       
-        await _quizManger.DownloadJson(QuizTitle);
+
+        _quizManger.CurrentQuiz = SelectedQuiz;
 
         var amountQuestions = _quizManger.CurrentQuiz.Questions.ToList();
         if (amountQuestions.Count == 0)
@@ -49,36 +49,36 @@ public class ChooseQuizViewModel : ObservableObject
         {
             _navigationManager.CurrentViewModel = new QuizViewModel(_quizManger, _navigationManager);
         }
-        
+
     }
 
-    public async Task LoadListView()
+    public void LoadListView()
     {
-        FileTitles = await _quizManger.JsonTitleList();
-       
+        AllQuiz = _quizManger.GetAllQuiz();
+
     }
 
 
-    private List<string> _fileTitles;
+    private IEnumerable<QuizModel> _allQuiz;
 
-    public List<string> FileTitles
+    public IEnumerable<QuizModel> AllQuiz
     {
-        get { return _fileTitles; }
+        get { return _allQuiz; }
         set
         {
-            SetProperty(ref _fileTitles, value);
+            SetProperty(ref _allQuiz, value);
         }
     }
 
 
-    private string _quizTitle;
+    private QuizModel _selectedQuiz;
 
-    public string QuizTitle
+    public QuizModel SelectedQuiz
     {
-        get { return _quizTitle; }
+        get { return _selectedQuiz; }
         set
         {
-            SetProperty(ref _quizTitle, value);
+            SetProperty(ref _selectedQuiz, value);
             CheckQuizStatus = true;
         }
     }

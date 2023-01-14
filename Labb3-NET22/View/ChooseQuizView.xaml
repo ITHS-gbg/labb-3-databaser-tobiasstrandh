@@ -55,8 +55,17 @@
             Grid.RowSpan="2"
             Grid.Column="2"
             Grid.ColumnSpan="1"
-            ItemsSource="{Binding FileTitles}"
-            SelectedItem="{Binding QuizTitle}" />
+            ItemsSource="{Binding AllQuiz}"
+            SelectedItem="{Binding SelectedQuiz}">
+            <ListView.View>
+            <GridView>
+                <GridViewColumn
+                    DisplayMemberBinding="{Binding QuizTitle, UpdateSourceTrigger=PropertyChanged}"
+                    Header="Quiz" />
+            </GridView>
+        </ListView.View>
+
+        </ListView>
 
 
     </Grid>

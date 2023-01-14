@@ -59,11 +59,62 @@ public class QuizManger
        return _collectionQuestion.Find(_ => true).ToEnumerable();
     }
 
+    public IEnumerable<QuizModel> GetAllQuiz()
+    {
+        return _collectionQuiz.Find(_ => true).ToEnumerable();
+    }
 
     public void MongoDbSaveQuiz(QuizModel quiz)
     {
         _collectionQuiz.InsertOne(quiz);
     }
+
+    public void AddQuestionToQuiz(QuizModel quiz, QuestionModel questions)
+    {
+        var filter = Builders<QuizModel>.Filter.Eq("Id", quiz.Id);
+        var update = Builders<QuizModel>.Update.AddToSet("Questions", questions);
+
+        _collectionQuiz.UpdateOne(filter, update);
+    }
+
+    public void DeleteQuiz(object id)
+    {
+        var filter = Builders<QuizModel>.Filter.Eq("Id", id);
+        _collectionQuiz.FindOneAndDelete(filter);
+    }
+
+    public void RemoveSelectedQuestionFromQuiz(object quizId, QuestionModel question)
+    {
+        var filter = Builders<QuizModel>.Filter.Eq("Id", quizId);
+        var update = Builders<QuizModel>.Update.Pull("Questions", question);
+
+        _collectionQuiz.UpdateOne(filter, update);
+    }
+
+    public void DeleteQuestion(object id)
+    {
+        var filter = Builders<QuestionModel>.Filter.Eq("Id", id);
+        _collectionQuestion.FindOneAndDelete(filter);
+    }
+
+    public void EditQuestion(object id, QuestionModel question)
+    {
+        var filter = Builders<QuestionModel>.Filter.Eq("Id", id);
+        var update = Builders<QuestionModel>.Update.Set("Statement", question.Statement)
+                                                   .Set("Answers", question.Answers)
+                                                   .Set("CorrectAnswer", question.CorrectAnswer);
+
+        _collectionQuestion.UpdateOne(filter, update);
+    }
+
+    public IEnumerable<QuizModel> PlayQuiz(object id)
+    {
+        var filter = Builders<QuizModel>.Filter.Eq("Id", id);
+
+        return _collectionQuiz.Find(filter).ToEnumerable();
+    }
+
+
 
     public async Task JsonDefaultQuizSave()
     {

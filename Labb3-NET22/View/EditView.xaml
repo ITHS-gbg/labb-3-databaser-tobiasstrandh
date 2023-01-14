@@ -29,34 +29,42 @@
 
 
         <ListView
-            Grid.Row="3"
-            Grid.RowSpan="3"
+            
+            Grid.RowSpan="5"
             Grid.Column="0"
             Grid.ColumnSpan="1"
             Margin="3"
-            ItemsSource="{Binding QuestionList, UpdateSourceTrigger=PropertyChanged}"
-            SelectedIndex="{Binding QuestionIndex}">
+            ItemsSource="{Binding AllQuestions, UpdateSourceTrigger=PropertyChanged}"
+            SelectedItem="{Binding SelectedQuestion}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn
                         Width="150"
                         DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}"
-                        Header="Statment" />
+                        Header="Question" />
                 </GridView>
             </ListView.View>
 
         </ListView>
 
         <ListView
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            Grid.Column="0"
+            Grid.Row="1"
+            Grid.RowSpan="1"
+            Grid.Column="4"
             Grid.ColumnSpan="1"
             Margin="3"
             ItemsSource="{Binding FileTitles}"
-            SelectedItem="{Binding QuizTitle}" />
+            SelectedItem="{Binding QuizTitle}" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}"
+                        Header="Category" />
+                </GridView>
+            </ListView.View>
+        </ListView>
 
-        <TextBlock
+<TextBlock
             Grid.Column="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
@@ -84,7 +92,7 @@
         <TextBox
             Grid.Row="1"
             Grid.Column="2"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="2"
             Margin="5"
             FontSize="18"
             IsEnabled="{Binding CanFillQuestionBoxes}"
@@ -102,7 +110,7 @@
         <TextBox
             Grid.Row="2"
             Grid.Column="2"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="2"
             Margin="5"
             FontSize="18"
             IsEnabled="{Binding CanFillQuestionBoxes}"
@@ -120,7 +128,7 @@
         <TextBox
             Grid.Row="3"
             Grid.Column="2"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="2"
             Margin="5"
             FontSize="18"
             IsEnabled="{Binding CanFillQuestionBoxes}"
@@ -169,16 +177,24 @@
             IsEnabled="{Binding CanFillQuestionBoxes}" />
 
 
-      
-
         <Button
             Grid.Row="5"
             Grid.Column="2"
             Margin="15"
             Command="{Binding SaveEditCommand}"
             FontSize="16"
-            IsEnabled="{Binding CanSaveOrRemove}">
+            >
             Save Edit
+        </Button>
+
+        <Button
+            Grid.Row="5"
+            Grid.Column="1"
+            Margin="15"
+            Command="{Binding NewQuestionCommand}"
+            FontSize="14"
+            >
+            Save New Question 
         </Button>
 
         
@@ -189,7 +205,7 @@
             Margin="15"
             Command="{Binding RemoveCommand}"
             FontSize="16"
-            IsEnabled="{Binding CanSaveOrRemove}">
+            >
             Remove Question
         </Button>
 
@@ -200,6 +216,15 @@
             Command="{Binding GoBackToStartCommand}"
             FontSize="16">
             Go back to start
+        </Button>
+
+        <Button
+            Grid.Row="4"
+            Grid.Column="2"
+            Margin="15"
+            Command="{Binding ClearFieldsCommand}"
+            FontSize="16">
+            Clear
         </Button>
 
     </Grid>

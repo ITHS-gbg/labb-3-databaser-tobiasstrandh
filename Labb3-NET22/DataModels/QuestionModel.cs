@@ -21,7 +21,7 @@ public class QuestionModel
     public int CorrectAnswer { get; set; }
 
     [BsonElement]
-    public string Category { get; set; } = String.Empty;
+    public IEnumerable<QuestionModel> Category { get; set; }
 
 
     public QuestionModel(string statement, string[] answers, int correctAnswer)

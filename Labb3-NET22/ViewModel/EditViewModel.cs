@@ -30,7 +30,10 @@ public class EditViewModel : ObservableObject
         RemoveCommand = new RelayCommand(() => RemoveQuestion());
         SaveEditCommand = new RelayCommand(() => SaveEdit());
         GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager));
-        
+        ClearFieldsCommand = new RelayCommand(() => ClearFields());
+        NewQuestionCommand = new RelayCommand(() => NewQuestion());
+
+
     }
 
     public ICommand RemoveCommand { get; }
@@ -38,25 +41,40 @@ public class EditViewModel : ObservableObject
     public ICommand SaveEditCommand { get; }
 
     public ICommand GoBackToStartCommand { get; }
+    public ICommand ClearFieldsCommand { get; }
+    public ICommand NewQuestionCommand { get; }
 
 
-    public async Task SaveEdit()
+    public void NewQuestion()
     {
         Correct();
 
         var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
 
-        _quizManger.CurrentQuiz.EditQuestion(QuestionIndex, QuestionStatment, QuestionCorrectAnswer, QuizAnswers);
+        var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer);
 
-        //await _quizManger.MongoDbSaveQuestion();
+        _quizManger.MongoDbSaveQuestion(newQuestion);
 
-        SetList();
+        LoadListView();
     }
-    public async Task RemoveQuestion()
+
+    public void SaveEdit()
+    {
+        Correct();
+
+        var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
+
+        var editQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer);
+
+        _quizManger.EditQuestion(SelectedQuestion.Id, editQuestion);
+
+
+        LoadListView();
+    }
+    public void RemoveQuestion()
     {
         
-        _quizManger.CurrentQuiz.RemoveQuestion(QuestionIndex);
-        //await _quizManger.MongoDbSaveQuestion();
+        _quizManger.DeleteQuestion(SelectedQuestion.Id);
 
         QuestionStatment = string.Empty;
 
@@ -68,7 +86,7 @@ public class EditViewModel : ObservableObject
         CorrectAnswerTwo = false;
         CorrectAnswerThree = false;
 
-        SetList();
+        LoadListView();
     }
 
 
@@ -86,22 +104,36 @@ public class EditViewModel : ObservableObject
     }
 
    
-    public async Task LoadListView()
+    public void LoadListView()
     {
-        FileTitles = await _quizManger.JsonTitleList();
+        AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
     }
 
-    private List<string> _fileTitles;
+    private IEnumerable<QuestionModel> _allQuestions;
 
-    public List<string> FileTitles
+    public IEnumerable<QuestionModel> AllQuestions
     {
-        get { return _fileTitles; }
+        get { return _allQuestions; }
         set
         {
-            SetProperty(ref _fileTitles, value);
+            SetProperty(ref _allQuestions, value);
         }
     }
 
+
+    private QuestionModel _selectedQuestion;
+
+    public QuestionModel SelectedQuestion
+    {
+        get { return _selectedQuestion; }
+        set
+        {
+            SetProperty(ref _selectedQuestion, value);
+            FillInBoxes();
+
+        }
+    }
+    
     private string _quizTitle;
 
     public string QuizTitle
@@ -142,6 +174,7 @@ public class EditViewModel : ObservableObject
        }
     }
 
+
     private IEnumerable<QuestionModel> _questionList;
 
     public IEnumerable<QuestionModel> QuestionList
@@ -156,17 +189,17 @@ public class EditViewModel : ObservableObject
 
     public void FillInBoxes()
     {
-        
 
-        if (QuestionIndex >= 0)
+
+        if (SelectedQuestion != null)
         {
-            QuestionStatment = QuestionList.ElementAt(QuestionIndex).Statement;
+            QuestionStatment = SelectedQuestion.Statement;
 
-            QuestionAnswerOne = QuestionList.ElementAt(QuestionIndex).Answers[0];
-            QuestionAnswerTwo = QuestionList.ElementAt(QuestionIndex).Answers[1];
-            QuestionAnswerThree = QuestionList.ElementAt(QuestionIndex).Answers[2];
+            QuestionAnswerOne = SelectedQuestion.Answers[0];
+            QuestionAnswerTwo = SelectedQuestion.Answers[1];
+            QuestionAnswerThree = SelectedQuestion.Answers[2];
 
-            QuestionCorrectAnswer = QuestionList.ElementAt(QuestionIndex).CorrectAnswer;
+            QuestionCorrectAnswer = SelectedQuestion.CorrectAnswer;
 
             if (QuestionCorrectAnswer == 0)
             {
@@ -182,25 +215,26 @@ public class EditViewModel : ObservableObject
             {
                 CorrectAnswerThree = true;
             }
-
         }
 
-        else
-        {
-            QuestionStatment = String.Empty;
+        
 
-            QuestionAnswerOne = String.Empty;
-            QuestionAnswerTwo = String.Empty;
-            QuestionAnswerThree = String.Empty;
 
-           
-            CorrectAnswerOne = false;
-            CorrectAnswerTwo = false;
-            CorrectAnswerThree = false;
-           
-        }
+       // CheckButtons();
+    }
 
-        CheckButtons();
+    public void ClearFields()
+    {
+        QuestionStatment = String.Empty;
+
+        QuestionAnswerOne = String.Empty;
+        QuestionAnswerTwo = String.Empty;
+        QuestionAnswerThree = String.Empty;
+
+
+        CorrectAnswerOne = false;
+        CorrectAnswerTwo = false;
+        CorrectAnswerThree = false;
     }
 
     private bool _correctAnswerOne;
