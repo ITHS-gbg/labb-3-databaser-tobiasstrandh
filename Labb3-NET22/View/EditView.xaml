@@ -30,7 +30,7 @@
 
         <ListView
             
-            Grid.RowSpan="5"
+            Grid.RowSpan="3"
             Grid.Column="0"
             Grid.ColumnSpan="1"
             Margin="3"
@@ -49,16 +49,32 @@
 
         <ListView
             Grid.Row="1"
-            Grid.RowSpan="1"
+            Grid.RowSpan="2"
             Grid.Column="4"
-            Grid.ColumnSpan="1"
             Margin="3"
-            ItemsSource="{Binding FileTitles}"
+            ItemsSource="{Binding CategoriesForAQuestion}"
             SelectedItem="{Binding QuizTitle}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn
-                        DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}"
+                        Width="100"
+                        DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                        Header="Selected Category" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView
+            Grid.Row="3"
+            Grid.RowSpan="2"
+            Grid.Column="4"
+            Margin="3"
+            ItemsSource="{Binding AllCategories}"
+            SelectedItem="{Binding SelectedCategory}" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
                         Header="Category" />
                 </GridView>
             </ListView.View>
@@ -176,6 +192,24 @@
             IsChecked="{Binding CorrectAnswerThree}"
             IsEnabled="{Binding CanFillQuestionBoxes}" />
 
+
+        <TextBox
+            Grid.Row="4"
+            Margin="5"
+            FontSize="18"
+            IsEnabled="{Binding CanFillQuestionBoxes}"
+            Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+
+        <Button
+            Grid.Row="5"
+           
+            Margin="15"
+            Command="{Binding SaveNewCategoryCommand}"
+            FontSize="12"
+        >
+            Create New Category
+        </Button>
 
         <Button
             Grid.Row="5"

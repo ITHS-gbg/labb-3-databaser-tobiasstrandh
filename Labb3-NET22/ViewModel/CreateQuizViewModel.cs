@@ -38,6 +38,8 @@ public class CreateQuizViewModel : ObservableObject
         AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
 
         AllQuiz = _quizManger.GetAllQuiz();
+
+        AllCategories = _quizManger.GetAllCategories();
     }
 
     public void NewQuiz()
@@ -120,6 +122,32 @@ public class CreateQuizViewModel : ObservableObject
             SetProperty(ref _selectedQuestionFromQuiz, value);
 
         }
+    }
+
+    private IEnumerable<Category> _allCategories;
+
+    public IEnumerable<Category> AllCategories
+    {
+        get { return _allCategories; }
+        set { SetProperty(ref _allCategories, value); }
+    }
+
+    private Category _selectedCategory;
+
+    public Category SelectedCategory
+    {
+        get { return _selectedCategory; }
+        set
+        {
+            SetProperty(ref _selectedCategory, value);
+            SerachForQuestionsByCategory();
+            
+        }
+    }
+
+    public void SerachForQuestionsByCategory()
+    {
+        AllQuestions = _quizManger.GetQuestionsByCategories(SelectedCategory);
     }
 
     private string _quizName;

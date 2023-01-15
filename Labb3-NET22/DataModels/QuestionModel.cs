@@ -21,7 +21,7 @@ public class QuestionModel
     public int CorrectAnswer { get; set; }
 
     [BsonElement]
-    public IEnumerable<QuestionModel> Category { get; set; }
+    public IEnumerable<Category> Category { get; set; }
 
 
     public QuestionModel(string statement, string[] answers, int correctAnswer)
@@ -29,7 +29,6 @@ public class QuestionModel
         Statement = statement;
         Answers = answers;
         CorrectAnswer = correctAnswer;
-
     }
 
 

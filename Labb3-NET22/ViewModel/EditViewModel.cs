@@ -32,6 +32,7 @@ public class EditViewModel : ObservableObject
         GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager));
         ClearFieldsCommand = new RelayCommand(() => ClearFields());
         NewQuestionCommand = new RelayCommand(() => NewQuestion());
+        SaveNewCategoryCommand = new RelayCommand(() => CreateNewCategory());
 
 
     }
@@ -43,6 +44,7 @@ public class EditViewModel : ObservableObject
     public ICommand GoBackToStartCommand { get; }
     public ICommand ClearFieldsCommand { get; }
     public ICommand NewQuestionCommand { get; }
+    public ICommand SaveNewCategoryCommand { get; }
 
 
     public void NewQuestion()
@@ -51,7 +53,7 @@ public class EditViewModel : ObservableObject
 
         var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
 
-        var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer);
+        var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
 
         _quizManger.MongoDbSaveQuestion(newQuestion);
 
@@ -64,7 +66,7 @@ public class EditViewModel : ObservableObject
 
         var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
 
-        var editQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer);
+        var editQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
 
         _quizManger.EditQuestion(SelectedQuestion.Id, editQuestion);
 
@@ -90,6 +92,18 @@ public class EditViewModel : ObservableObject
     }
 
 
+    public void CreateNewCategory()
+    {
+        var newCategory = new Category() { CategoryName = CategoryName };
+
+        _quizManger.CreateNewCategory(newCategory);
+
+        LoadListView();
+
+        CategoryName = string.Empty;
+    }
+
+
     public void CheckButtons()
     {
         if (QuestionIndex == null || QuestionIndex < 0)
@@ -107,6 +121,8 @@ public class EditViewModel : ObservableObject
     public void LoadListView()
     {
         AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
+
+        AllCategories = _quizManger.GetAllCategories();
     }
 
     private IEnumerable<QuestionModel> _allQuestions;
@@ -120,7 +136,6 @@ public class EditViewModel : ObservableObject
         }
     }
 
-
     private QuestionModel _selectedQuestion;
 
     public QuestionModel SelectedQuestion
@@ -133,7 +148,60 @@ public class EditViewModel : ObservableObject
 
         }
     }
-    
+
+    private Category _selectedCategory;
+
+    public Category SelectedCategory
+    {
+        get { return _selectedCategory; }
+        set
+        {
+            SetProperty(ref _selectedCategory, value);
+            if (SelectedCategory != null)
+            {
+                if (CategoriesForAQuestion != null)
+                {
+                    foreach (var question in CategoriesForAQuestion!)
+                    {
+                        if (question.Id == SelectedCategory.Id)
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                CategoriesForAQuestion.Add(SelectedCategory);
+            }
+        }
+    }
+
+    private ObservableCollection<Category> _categoriesForAQuestion = new ObservableCollection<Category>();
+
+    public ObservableCollection<Category> CategoriesForAQuestion
+    {
+        get { return _categoriesForAQuestion; }
+        set { SetProperty(ref _categoriesForAQuestion, value); }
+    }
+
+    private string _categoryName;
+
+    public string CategoryName
+    {
+        get { return _categoryName; }
+        set { SetProperty(ref _categoryName, value); }
+    }
+
+    private IEnumerable<Category> _allCategories;
+
+    public IEnumerable<Category> AllCategories
+    {
+        get { return _allCategories; }
+        set { SetProperty(ref _allCategories, value); }
+    }
+
+
+
+
     private string _quizTitle;
 
     public string QuizTitle
@@ -151,8 +219,8 @@ public class EditViewModel : ObservableObject
 
     public async Task SetList()
     {
-        await _quizManger.DownloadJson(QuizTitle);
-        QuestionList = _quizManger.CurrentQuiz.Questions;
+        //await _quizManger.DownloadJson(QuizTitle);
+       // QuestionList = _quizManger.CurrentQuiz.Questions;
     }
 
 
@@ -201,6 +269,8 @@ public class EditViewModel : ObservableObject
 
             QuestionCorrectAnswer = SelectedQuestion.CorrectAnswer;
 
+            CategoriesForAQuestion = new ObservableCollection<Category>(SelectedQuestion.Category);
+
             if (QuestionCorrectAnswer == 0)
             {
                 CorrectAnswerOne = true;
@@ -230,6 +300,8 @@ public class EditViewModel : ObservableObject
         QuestionAnswerOne = String.Empty;
         QuestionAnswerTwo = String.Empty;
         QuestionAnswerThree = String.Empty;
+
+        CategoriesForAQuestion = new ObservableCollection<Category>();
 
 
         CorrectAnswerOne = false;

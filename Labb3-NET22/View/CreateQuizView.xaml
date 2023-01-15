@@ -60,7 +60,22 @@
         </ListView.View>
         </ListView>
 
-    <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ListView
+            Grid.Column="2"
+            Grid.Row="2"
+            Grid.ColumnSpan="1"
+            Margin="5"
+            ItemsSource="{Binding AllCategories, UpdateSourceTrigger=PropertyChanged}"
+            SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}" Header="Category" />
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBox
             
             Grid.Column="2"
