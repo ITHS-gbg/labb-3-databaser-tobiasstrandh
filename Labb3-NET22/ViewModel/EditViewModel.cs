@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -59,6 +60,8 @@ public class EditViewModel : ObservableObject
 
         _questionManager.MongoDbSaveQuestion(newQuestion);
 
+        ClearFields();
+
         LoadListView();
     }
 
@@ -72,6 +75,7 @@ public class EditViewModel : ObservableObject
 
         _questionManager.EditQuestion(SelectedQuestion.Id, editQuestion);
 
+        ClearFields();
 
         LoadListView();
     }
@@ -90,7 +94,11 @@ public class EditViewModel : ObservableObject
         CorrectAnswerTwo = false;
         CorrectAnswerThree = false;
 
+        CanSaveOrRemove = false;
+
         LoadListView();
+
+        ClearFields();
     }
 
 
@@ -103,12 +111,14 @@ public class EditViewModel : ObservableObject
         LoadListView();
 
         CategoryName = string.Empty;
+
+        CanSaveNewCategory = false;
     }
 
 
     public void CheckButtons()
     {
-        if (QuestionIndex == null || QuestionIndex < 0)
+        if (SelectedQuestion == null)
         {
             CanSaveOrRemove = false;
         }
@@ -116,6 +126,7 @@ public class EditViewModel : ObservableObject
         else
         {
             CanSaveOrRemove = true;
+            CanSaveNewQuestion = false;
         }
     }
 
@@ -190,7 +201,11 @@ public class EditViewModel : ObservableObject
     public string CategoryName
     {
         get { return _categoryName; }
-        set { SetProperty(ref _categoryName, value); }
+        set
+        {
+            SetProperty(ref _categoryName, value);
+            CheckCategoryTextBox();
+        }
     }
 
     private IEnumerable<Category> _allCategories;
@@ -204,26 +219,22 @@ public class EditViewModel : ObservableObject
 
 
 
-    private string _quizTitle;
+    //private string _quizTitle;
 
-    public string QuizTitle
-    {
-        get { return _quizTitle; }
-        set
-        {
-            SetProperty(ref _quizTitle, value);
-            SetList();
+    //public string QuizTitle
+    //{
+    //    get { return _quizTitle; }
+    //    set
+    //    {
+    //        SetProperty(ref _quizTitle, value);
+    //        SetList();
             
             
 
-        }
-    }
+    //    }
+    //}
 
-    public async Task SetList()
-    {
-        //await _quizManger.DownloadJson(QuizTitle);
-       // QuestionList = _quizManger.CurrentQuiz.Questions;
-    }
+   
 
 
     public void Correct()
@@ -245,17 +256,17 @@ public class EditViewModel : ObservableObject
     }
 
 
-    private IEnumerable<QuestionModel> _questionList;
+    //private IEnumerable<QuestionModel> _questionList;
 
-    public IEnumerable<QuestionModel> QuestionList
-    {
-        get { return _questionList; }
-        set
-        {
-            SetProperty(ref _questionList, value);
-            FillInBoxes();
-        }
-    }
+    //public IEnumerable<QuestionModel> QuestionList
+    //{
+    //    get { return _questionList; }
+    //    set
+    //    {
+    //        SetProperty(ref _questionList, value);
+    //        FillInBoxes();
+    //    }
+    //}
 
     public void FillInBoxes()
     {
@@ -289,10 +300,47 @@ public class EditViewModel : ObservableObject
             }
         }
 
-        
 
 
-       // CheckButtons();
+        CheckButtons();
+    }
+
+
+    public void CheckFields()
+    {
+        if (SelectedQuestion == null)
+        {
+            CanSaveOrRemove = false;
+
+            if (QuestionStatment != String.Empty)
+            {
+                if (QuestionAnswerOne != String.Empty)
+                {
+                    if (QuestionAnswerTwo != String.Empty)
+                    {
+                        if (QuestionAnswerThree != String.Empty)
+                        {
+                            if (CorrectAnswerOne != false || CorrectAnswerTwo != false || CorrectAnswerThree != false)
+                            {
+                                CanSaveNewQuestion = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void CheckCategoryTextBox()
+    {
+        if (CategoryName == String.Empty)
+        {
+            CanSaveNewCategory = false;
+            return;
+        }
+
+        CanSaveNewCategory = true;
     }
 
     public void ClearFields()
@@ -305,6 +353,9 @@ public class EditViewModel : ObservableObject
 
         CategoriesForAQuestion = new ObservableCollection<Category>();
 
+        CanSaveOrRemove = false;
+
+        CanSaveNewQuestion = false;
 
         CorrectAnswerOne = false;
         CorrectAnswerTwo = false;
@@ -324,6 +375,7 @@ public class EditViewModel : ObservableObject
                 CorrectAnswerTwo = false;
                 CorrectAnswerThree = false;
             }
+            CheckFields();
         }
     }
 
@@ -340,6 +392,7 @@ public class EditViewModel : ObservableObject
                 CorrectAnswerThree = false;
                 CorrectAnswerOne = false;
             }
+            CheckFields();
         }
     }
 
@@ -357,6 +410,7 @@ public class EditViewModel : ObservableObject
                 CorrectAnswerOne = false;
                 
             }
+            CheckFields();
 
         }
     }
@@ -369,7 +423,9 @@ public class EditViewModel : ObservableObject
         set
         {
             SetProperty(ref _questionStatment, value);
+            CheckFields();
         }
+
     }
 
     private string _questionAnswerOne = String.Empty;
@@ -380,7 +436,7 @@ public class EditViewModel : ObservableObject
         set
         {
             SetProperty(ref _questionAnswerOne, value);
-            
+            CheckFields();
         }
     }
 
@@ -392,7 +448,7 @@ public class EditViewModel : ObservableObject
         set
         {
             SetProperty(ref _questionAnswerTwo, value);
-            
+            CheckFields();
         }
     }
 
@@ -404,6 +460,7 @@ public class EditViewModel : ObservableObject
         set
         {
             SetProperty(ref _questionAnswerThree, value);
+            CheckFields();
         }
     }
 
@@ -430,19 +487,23 @@ public class EditViewModel : ObservableObject
         set { SetProperty(ref _canSaveOrRemove, value); }
     }
 
-  
+    private bool _canSaveNewQuestion = false;
 
-    private int _questionIndex;
-
-    public int QuestionIndex
+    public bool CanSaveNewQuestion
     {
-        get { return _questionIndex; }
-        set
-        {
-            SetProperty(ref _questionIndex, value);
-            FillInBoxes();
-        }
+        get { return _canSaveNewQuestion; }
+        set { SetProperty(ref _canSaveNewQuestion, value); }
     }
 
-    
+
+    private bool _canSaveNewCategory = false;
+
+    public bool CanSaveNewCategory
+    {
+        get { return _canSaveNewCategory; }
+        set { SetProperty(ref _canSaveNewCategory, value); }
+    }
+
+
+
 }

@@ -38,28 +38,28 @@
         </ListView>
 
         <ListView
-            Grid.Row="2"
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Margin="5"
             ItemsSource="{Binding SelectedQuiz.Questions, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding SelectedQuestionFromQuiz, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}" Header="Question" />
-                    <GridViewColumn DisplayMemberBinding="{Binding Category, UpdateSourceTrigger=PropertyChanged}" Header="Category" />
+                    <GridViewColumn Width="242" DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}" Header="Question" />
                 </GridView>
             </ListView.View>
         </ListView>
 
         <ListView
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="1"
-            Grid.ColumnSpan="1"
+            Grid.RowSpan="2"
             Margin="5"
             ItemsSource="{Binding AllQuestions, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding QuestionToQuiz, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}" Header="Question" />
-                    <GridViewColumn DisplayMemberBinding="{Binding Category, UpdateSourceTrigger=PropertyChanged}" Header="Category" />
+                    <GridViewColumn Width="242" DisplayMemberBinding="{Binding Statement, UpdateSourceTrigger=PropertyChanged}" Header="Question" />
 
                 </GridView>
             </ListView.View>
@@ -97,6 +97,24 @@
             </Button>
         </StackPanel>
 
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <TextBox
+                Grid.Column="2"
+                Margin="5"
+                Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}" />
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="20"
+                Command="{Binding SearchByWordCommand}">
+                Search by word
+            </Button>
+        </StackPanel>
+
 
 
         <Button
@@ -115,10 +133,18 @@
 
         <Button
             Grid.Row="3"
-            Grid.Column="2"
+            Grid.Column="1"
             Margin="35"
             Command="{Binding ResetCategoryCommand}">
             Reset 
+        </Button>
+
+        <Button
+            Grid.Row="3"
+            Grid.Column="2"
+            Margin="35"
+            Command="{Binding BackToStartCommand}">
+            Back to start
         </Button>
 
     </Grid>

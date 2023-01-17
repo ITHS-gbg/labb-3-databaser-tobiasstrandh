@@ -22,6 +22,8 @@ public class CreateQuizViewModel : ObservableObject
 
     public ICommand RemoveSelectedQuestionCommand { get; }
     public ICommand ResetCategoryCommand { get; }
+    public ICommand BackToStartCommand { get; }
+    public ICommand SearchByWordCommand { get; }
     public CreateQuizViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
@@ -37,6 +39,10 @@ public class CreateQuizViewModel : ObservableObject
         RemoveSelectedQuestionCommand = new RelayCommand(() => RemoveQuestionFromQuiz());
 
         ResetCategoryCommand = new RelayCommand(() => ResetCategory());
+
+        SearchByWordCommand = new RelayCommand(() => GetQuestionsByName());
+
+        BackToStartCommand  = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager));
     }
 
     public void GetAllQuestionsAndQuiz()
@@ -46,6 +52,7 @@ public class CreateQuizViewModel : ObservableObject
         AllQuiz = _quizManger.GetAllQuiz();
 
         AllCategories = _quizManger.GetAllCategories();
+
     }
 
     public void NewQuiz()
@@ -110,6 +117,19 @@ public class CreateQuizViewModel : ObservableObject
 
         SelectedQuiz = AllQuiz.First(q => q.QuizTitle == quizTitle);
 
+    }
+
+    public void GetQuestionsByName()
+    {
+        AllQuestions = _questionManager.GetQuestionsByName(SearchName);
+    }
+
+    private string _searchName = String.Empty;
+
+    public string SearchName
+    {
+        get { return _searchName; }
+        set { SetProperty(ref _searchName, value); }
     }
 
     private IEnumerable<QuestionModel> _allQuestions;

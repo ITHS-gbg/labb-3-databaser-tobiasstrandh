@@ -130,12 +130,14 @@ public class ChooseQuizViewModel : ObservableObject
         {
             foreach (var cat in question.Category)
             {
-                foreach (var ca in cat.CategoryName)
+                if (cat.Id == SelectedCategory.Id)
                 {
-                    if (true)
+                    if (questions.Contains(question))
                     {
-                        
+                        return;
                     }
+
+                    questions.Add(question);
                 }
             }
         }
@@ -154,16 +156,19 @@ public class ChooseQuizViewModel : ObservableObject
                 {
                     if (q.Id == question.Id )
                     {
-                        QuizWithSelectedCategory!.Add(quiz);
+                        if (!QuizWithSelectedCategory.Contains(quiz))
+                        {
+                            QuizWithSelectedCategory!.Add(quiz);
+                        }
+                          
                     }
                 }
             }
         }
 
-        if (QuizWithSelectedCategory != null)
-        {
-            AllQuiz = QuizWithSelectedCategory;
-        }
+        
+        AllQuiz = QuizWithSelectedCategory;
+        
     }
 
 }

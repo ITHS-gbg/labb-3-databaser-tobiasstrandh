@@ -203,8 +203,8 @@
 
         <Button
             Grid.Row="5"
-           
             Margin="15"
+            IsEnabled="{Binding CanSaveNewCategory}"
             Command="{Binding SaveNewCategoryCommand}"
             FontSize="12"
         >
@@ -215,6 +215,7 @@
             Grid.Row="5"
             Grid.Column="2"
             Margin="15"
+            IsEnabled="{Binding CanSaveOrRemove}"
             Command="{Binding SaveEditCommand}"
             FontSize="16"
             >
@@ -225,6 +226,7 @@
             Grid.Row="5"
             Grid.Column="1"
             Margin="15"
+            IsEnabled="{Binding CanSaveNewQuestion}"
             Command="{Binding NewQuestionCommand}"
             FontSize="14"
             >
@@ -239,6 +241,7 @@
             Margin="15"
             Command="{Binding RemoveCommand}"
             FontSize="16"
+            IsEnabled="{Binding CanSaveOrRemove}"
             >
             Remove Question
         </Button>

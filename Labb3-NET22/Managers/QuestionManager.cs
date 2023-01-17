@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Labb3_NET22.DataModels;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Labb3_NET22.Managers;
@@ -56,6 +57,11 @@ public class QuestionManager
         var filter = Builders<QuestionModel>.Filter.Eq("Category", id);
 
         return _collectionQuestion.Find(filter).ToEnumerable();
+    }
+
+    public IEnumerable<QuestionModel> GetQuestionsByName(string name)
+    {
+        return _collectionQuestion.Find(x => x.Statement.Contains(name)).ToEnumerable();
     }
 
 }
