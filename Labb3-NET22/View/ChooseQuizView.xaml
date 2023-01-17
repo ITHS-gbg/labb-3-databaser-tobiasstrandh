@@ -67,6 +67,21 @@
 
         </ListView>
 
+        <ListView
+            Grid.Row="0"
+           
+            Grid.Column="1"
+            
+            ItemsSource="{Binding AllCategories}"
+            SelectedItem="{Binding SelectedCategory}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                        Header="Category" />
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 </UserControl>

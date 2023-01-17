@@ -57,7 +57,7 @@ public class CreateQuestionViewModel : ObservableObject
     public async Task ReturnToStartView()
     {
         //await _quizManger.MongoDbSaveQuestion();
-        _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
+        //_navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
     }
 
   
@@ -84,7 +84,7 @@ public class CreateQuestionViewModel : ObservableObject
 
         var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer);
 
-        _quizManger.MongoDbSaveQuestion(newQuestion);
+        //_navigationManager.MongoDbSaveQuestion(newQuestion);
 
 
 

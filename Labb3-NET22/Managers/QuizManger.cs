@@ -49,19 +49,9 @@ public class QuizManger
         _collectionQuestionCategory = database.GetCollection<Category>("questionCategory", new MongoCollectionSettings() { AssignIdOnInsert = true });
     }
 
-    public async Task MongoDbSaveQuestion(QuestionModel question)
-    {
+    
 
-       _collectionQuestion.InsertOne(question);
-
-       // CurrentQuizChanged?.Invoke();
-
-    }
-
-    public IEnumerable<QuestionModel> GetAllQuestionsFromMongoDb()
-    {
-       return _collectionQuestion.Find(_ => true).ToEnumerable();
-    }
+    
 
     public IEnumerable<QuizModel> GetAllQuiz()
     {
@@ -95,22 +85,16 @@ public class QuizManger
         _collectionQuiz.UpdateOne(filter, update);
     }
 
-    public void DeleteQuestion(object id)
+    public IEnumerable<QuizModel> GetQuizByCategories(Category category )
     {
-        var filter = Builders<QuestionModel>.Filter.Eq("Id", id);
-        _collectionQuestion.FindOneAndDelete(filter);
+        var filter2 = Builders<QuestionModel>.Filter.Eq("Category", category.Id);
+
+        var filter = Builders<QuizModel>.Filter.Eq("Id", category.Id);
+
+        return _collectionQuiz.Find(filter).ToEnumerable();
     }
 
-    public void EditQuestion(object id, QuestionModel question)
-    {
-        var filter = Builders<QuestionModel>.Filter.Eq("Id", id);
-        var update = Builders<QuestionModel>.Update.Set("Statement", question.Statement)
-                                                   .Set("Answers", question.Answers)
-                                                   .Set("CorrectAnswer", question.CorrectAnswer)
-                                                   .Set("Category", question.Category);
 
-        _collectionQuestion.UpdateOne(filter, update);
-    }
 
 
 
@@ -127,18 +111,17 @@ public class QuizManger
 
     public IEnumerable<QuestionModel> GetQuestionsByCategories(object id)
     {
+        
+
         var filter = Builders<QuestionModel>.Filter.Eq("Category", id);
 
         return _collectionQuestion.Find(filter).ToEnumerable();
     }
 
 
-    public IEnumerable<QuizModel> PlayQuiz(Category category)
-    {
-        var filter = Builders<QuizModel>.Filter.Eq("Id", category.Id);
 
-        return _collectionQuiz.Find(filter).ToEnumerable();
-    }
+
+
 
 
 

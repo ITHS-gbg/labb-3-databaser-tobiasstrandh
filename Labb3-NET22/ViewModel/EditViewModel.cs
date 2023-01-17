@@ -16,20 +16,22 @@ public class EditViewModel : ObservableObject
 {
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
+    private readonly QuestionManager _questionManager;
    
 
-    public EditViewModel(QuizManger quizManger, NavigationManager navigationManager)
+    public EditViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
         _navigationManager = navigationManager;
-        
-       
+        _questionManager = questionManager;
+
+
         LoadListView();
 
         
         RemoveCommand = new RelayCommand(() => RemoveQuestion());
         SaveEditCommand = new RelayCommand(() => SaveEdit());
-        GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager));
+        GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager));
         ClearFieldsCommand = new RelayCommand(() => ClearFields());
         NewQuestionCommand = new RelayCommand(() => NewQuestion());
         SaveNewCategoryCommand = new RelayCommand(() => CreateNewCategory());
@@ -55,7 +57,7 @@ public class EditViewModel : ObservableObject
 
         var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
 
-        _quizManger.MongoDbSaveQuestion(newQuestion);
+        _questionManager.MongoDbSaveQuestion(newQuestion);
 
         LoadListView();
     }
@@ -68,15 +70,15 @@ public class EditViewModel : ObservableObject
 
         var editQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
 
-        _quizManger.EditQuestion(SelectedQuestion.Id, editQuestion);
+        _questionManager.EditQuestion(SelectedQuestion.Id, editQuestion);
 
 
         LoadListView();
     }
     public void RemoveQuestion()
     {
-        
-        _quizManger.DeleteQuestion(SelectedQuestion.Id);
+
+        _questionManager.DeleteQuestion(SelectedQuestion.Id);
 
         QuestionStatment = string.Empty;
 
@@ -120,7 +122,7 @@ public class EditViewModel : ObservableObject
    
     public void LoadListView()
     {
-        AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
+        AllQuestions = _questionManager.GetAllQuestionsFromMongoDb();
 
         AllCategories = _quizManger.GetAllCategories();
     }

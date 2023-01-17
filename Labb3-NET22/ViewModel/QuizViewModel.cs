@@ -15,15 +15,18 @@ public class QuizViewModel : ObservableObject
     
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
+    private readonly QuestionManager _questionManager;
 
     public ICommand NextQuestionCommand { get; }
 
-    public QuizViewModel (QuizManger quizManger, NavigationManager navigationManager)
+    public QuizViewModel (QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
 
         _quizManger = quizManger;
 
         _navigationManager = navigationManager;
+
+        _questionManager = questionManager;
 
         RandomQuestion();
 
@@ -47,7 +50,7 @@ public class QuizViewModel : ObservableObject
         if (AmountAnswersTotal > amountQuestions.Count)
         {
 
-            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
+            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager);
             
         }
 

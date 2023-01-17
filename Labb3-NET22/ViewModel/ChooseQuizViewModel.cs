@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,20 +15,21 @@ public class ChooseQuizViewModel : ObservableObject
 {
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
-
+    private readonly QuestionManager _questionManager;
     public ICommand ReturnToStartViewCommand { get; }
     public ICommand GoToQuizViewCommand { get; }
 
-    public ChooseQuizViewModel(QuizManger quizManger, NavigationManager navigationManager)
+    public ChooseQuizViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
         
         
         _navigationManager = navigationManager;
         _quizManger = quizManger;
+        _questionManager = questionManager;
         LoadListView();
 
 
-        ReturnToStartViewCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager));
+        ReturnToStartViewCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager));
 
         GoToQuizViewCommand = new RelayCommand(() => GoToQuizView());
 
@@ -42,12 +44,12 @@ public class ChooseQuizViewModel : ObservableObject
         var amountQuestions = _quizManger.CurrentQuiz.Questions.ToList();
         if (amountQuestions.Count == 0)
         {
-            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
+            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager);
         }
 
         else
         {
-            _navigationManager.CurrentViewModel = new QuizViewModel(_quizManger, _navigationManager);
+            _navigationManager.CurrentViewModel = new QuizViewModel(_quizManger, _questionManager, _navigationManager);
         }
 
     }
@@ -55,6 +57,8 @@ public class ChooseQuizViewModel : ObservableObject
     public void LoadListView()
     {
         AllQuiz = _quizManger.GetAllQuiz();
+
+        AllCategories = _quizManger.GetAllCategories();
 
     }
 
@@ -91,6 +95,74 @@ public class ChooseQuizViewModel : ObservableObject
         set
         {
             SetProperty(ref _checkQuizStatus, value);
+        }
+    }
+
+    private IEnumerable<Category> _allCategories;
+
+    public IEnumerable<Category> AllCategories
+    {
+        get { return _allCategories; }
+        set { SetProperty(ref _allCategories, value); }
+    }
+
+    private Category _selectedCategory;
+
+    public Category SelectedCategory
+    {
+        get { return _selectedCategory; }
+        set
+        {
+            SetProperty(ref _selectedCategory, value);
+            GetQuizByCategory();
+        }
+    }
+
+    public void GetQuizByCategory()
+    {
+
+        var allQuestions = _questionManager.GetAllQuestionsFromMongoDb().ToList();
+        var questions = allQuestions.ToList();
+        questions.Clear();
+
+        
+        foreach (var question in allQuestions)
+        {
+            foreach (var cat in question.Category)
+            {
+                foreach (var ca in cat.CategoryName)
+                {
+                    if (true)
+                    {
+                        
+                    }
+                }
+            }
+        }
+
+
+
+        ObservableCollection<QuizModel> QuizWithSelectedCategory = new ObservableCollection<QuizModel>();
+
+        AllQuiz = _quizManger.GetAllQuiz();
+
+        foreach (var quiz in AllQuiz)
+        {
+            foreach (var question in quiz.Questions)
+            {
+                foreach (var q in questions)
+                {
+                    if (q.Id == question.Id )
+                    {
+                        QuizWithSelectedCategory!.Add(quiz);
+                    }
+                }
+            }
+        }
+
+        if (QuizWithSelectedCategory != null)
+        {
+            AllQuiz = QuizWithSelectedCategory;
         }
     }
 

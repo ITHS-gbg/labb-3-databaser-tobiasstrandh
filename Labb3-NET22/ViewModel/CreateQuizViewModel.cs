@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,15 +15,18 @@ public class CreateQuizViewModel : ObservableObject
 {
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
+    private readonly QuestionManager _questionManager;
 
     public ICommand NewQuizCommand { get; }
     public ICommand DeleteQuizCommand { get; }
 
     public ICommand RemoveSelectedQuestionCommand { get; }
-    public CreateQuizViewModel(QuizManger quizManger, NavigationManager navigationManager)
+    public ICommand ResetCategoryCommand { get; }
+    public CreateQuizViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
         _navigationManager = navigationManager;
+        _questionManager = questionManager;
 
         GetAllQuestionsAndQuiz();
 
@@ -31,11 +35,13 @@ public class CreateQuizViewModel : ObservableObject
         DeleteQuizCommand = new RelayCommand(() => DeleteQuiz());
         
         RemoveSelectedQuestionCommand = new RelayCommand(() => RemoveQuestionFromQuiz());
+
+        ResetCategoryCommand = new RelayCommand(() => ResetCategory());
     }
 
     public void GetAllQuestionsAndQuiz()
     {
-        AllQuestions = _quizManger.GetAllQuestionsFromMongoDb();
+        AllQuestions = _questionManager.GetAllQuestionsFromMongoDb();
 
         AllQuiz = _quizManger.GetAllQuiz();
 
@@ -44,15 +50,25 @@ public class CreateQuizViewModel : ObservableObject
 
     public void NewQuiz()
     {
-        var newQuiz = new QuizModel(){QuizTitle = QuizName};
+        if (QuizName != String.Empty)
+        {
+            var newQuiz = new QuizModel() { QuizTitle = QuizName };
 
-        _quizManger.MongoDbSaveQuiz(newQuiz);
+            _quizManger.MongoDbSaveQuiz(newQuiz);
 
-        GetAllQuestionsAndQuiz();
+            GetAllQuestionsAndQuiz();
+
+            QuizName = String.Empty;
+        }
     }
 
     public void DeleteQuiz()
     {
+        if (SelectedQuiz == null)
+        {
+            return;
+        }
+
         _quizManger.DeleteQuiz(SelectedQuiz.Id);
 
         GetAllQuestionsAndQuiz();
@@ -60,17 +76,32 @@ public class CreateQuizViewModel : ObservableObject
 
     public void AddQuestionToQuiz()
     {
+        if (SelectedQuiz == null || QuestionToQuiz == null)
+        {
+            return;
+        }
+
         _quizManger.AddQuestionToQuiz(SelectedQuiz, QuestionToQuiz);
 
         var quizTitle = SelectedQuiz.QuizTitle;
 
-        GetAllQuestionsAndQuiz();
+        AllQuiz = _quizManger.GetAllQuiz();
 
         SelectedQuiz = AllQuiz.First(q => q.QuizTitle == quizTitle);
+
+        if (Category != null)
+        {
+            AllQuestions = _quizManger.GetQuestionsByCategories(Category);
+        }
     }
 
     public void RemoveQuestionFromQuiz()
     {
+        if (SelectedQuiz == null || SelectedQuestionFromQuiz == null)
+        {
+            return;
+        }
+
         _quizManger.RemoveSelectedQuestionFromQuiz(SelectedQuiz.Id, SelectedQuestionFromQuiz);
 
         var quizTitle = SelectedQuiz.QuizTitle;
@@ -141,13 +172,29 @@ public class CreateQuizViewModel : ObservableObject
         {
             SetProperty(ref _selectedCategory, value);
             SerachForQuestionsByCategory();
-            
+            Category = SelectedCategory;
         }
     }
 
     public void SerachForQuestionsByCategory()
     {
         AllQuestions = _quizManger.GetQuestionsByCategories(SelectedCategory);
+    }
+
+    public void ResetCategory()
+    {
+        Category = null;
+        SelectedCategory = null;
+
+        GetAllQuestionsAndQuiz();
+    }
+
+    private Category _category;
+
+    public Category Category
+    {
+        get { return _category; }
+        set { SetProperty(ref _category, value); }
     }
 
     private string _quizName;
@@ -176,22 +223,21 @@ public class CreateQuizViewModel : ObservableObject
 
             if (QuestionToQuiz != null && SelectedQuiz != null)
             {
-                AddQuestionToQuiz();
+                
+                    foreach (var question in SelectedQuiz.Questions!)
+                    {
+                        if (question.Id == QuestionToQuiz.Id)
+                        {
+                            return;
+                        }
+                    }
+
+                    AddQuestionToQuiz();
+                
             }
 
 
-            //if (QuestionToQuiz != null)
-            //{
-            //    foreach (var question in QuizQuestions!)
-            //    {
-            //        if (question.Id == QuestionToQuiz.Id)
-            //        {
-            //            return;
-            //        }
-            //    }
-
-            //    QuizQuestions.Add(QuestionToQuiz);
-            //}
+            
 
         }
     }

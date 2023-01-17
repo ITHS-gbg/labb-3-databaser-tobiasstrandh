@@ -15,21 +15,20 @@ public class StartViewModel : ObservableObject
 
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
-    public StartViewModel( QuizManger quizManger, NavigationManager navigationManager)
+    private readonly QuestionManager _questionManager;
+    public StartViewModel( QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
         _navigationManager = navigationManager;
+        _questionManager = questionManager;
        
         
 
-        
+        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _questionManager,_navigationManager));
 
+        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new ChooseQuizViewModel(_quizManger, _questionManager,_navigationManager));
 
-        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _navigationManager));
-
-        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new ChooseQuizViewModel(_quizManger, _navigationManager));
-
-        NavigateEditQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new EditViewModel(_quizManger, _navigationManager));
+        NavigateEditQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new EditViewModel(_quizManger, _questionManager,_navigationManager));
     }
 
 

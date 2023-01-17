@@ -18,23 +18,22 @@ namespace Labb3_NET22
     {
         private readonly NavigationManager _navigationManager;
         private readonly QuizManger _quizManger;
+        private readonly QuestionManager _questionManager;
         public App()
         {
             _navigationManager = new NavigationManager();
             _quizManger = new QuizManger();
+            _questionManager = new QuestionManager();
         }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
             
-            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _navigationManager);
+            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager);
 
-            //Instansierar fönstret och sätter DataContext till en ny instans av MainViewModel
-            //och skickar med demoViewModel som instansierats ovanför
-            var mainWindow = new MainWindow() { DataContext = new MainViewModel(_navigationManager, _quizManger) };
+            var mainWindow = new MainWindow() { DataContext = new MainViewModel(_navigationManager, _quizManger, _questionManager) };
 
-            //Visar fönstret.
             mainWindow.Show();
         }
     }
