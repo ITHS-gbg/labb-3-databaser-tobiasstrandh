@@ -15,9 +15,6 @@
 
 
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type viewmodels:CreateQuestionViewModel}">
-                <views:CreateQuestionView />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:StartViewModel}">
                 <views:StartView />
             </DataTemplate>

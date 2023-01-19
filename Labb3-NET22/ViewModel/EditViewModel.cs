@@ -18,25 +18,27 @@ public class EditViewModel : ObservableObject
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
     private readonly QuestionManager _questionManager;
-   
+    private readonly CategoryManager _categoryManager;
 
-    public EditViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
+
+    public EditViewModel(QuizManger quizManger, QuestionManager questionManager, CategoryManager categoryManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
         _navigationManager = navigationManager;
         _questionManager = questionManager;
-
+        _categoryManager = categoryManager;
 
         LoadListView();
 
         
         RemoveCommand = new RelayCommand(() => RemoveQuestion());
         SaveEditCommand = new RelayCommand(() => SaveEdit());
-        GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager));
+        GoBackToStartCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _categoryManager,_navigationManager));
         ClearFieldsCommand = new RelayCommand(() => ClearFields());
         NewQuestionCommand = new RelayCommand(() => NewQuestion());
         SaveNewCategoryCommand = new RelayCommand(() => CreateNewCategory());
-
+        RemoveCategoryCommand = new RelayCommand(() => RemoveCategoryFromDatabase());
+        RemoveCategoryFromQuestionCommand = new  RelayCommand(() => RemoveCategoryFromQuestion());
 
     }
 
@@ -48,6 +50,8 @@ public class EditViewModel : ObservableObject
     public ICommand ClearFieldsCommand { get; }
     public ICommand NewQuestionCommand { get; }
     public ICommand SaveNewCategoryCommand { get; }
+    public ICommand RemoveCategoryCommand { get; }
+    public ICommand RemoveCategoryFromQuestionCommand { get; }
 
 
     public void NewQuestion()
@@ -106,7 +110,7 @@ public class EditViewModel : ObservableObject
     {
         var newCategory = new Category() { CategoryName = CategoryName };
 
-        _quizManger.CreateNewCategory(newCategory);
+        _categoryManager.CreateNewCategory(newCategory);
 
         LoadListView();
 
@@ -116,9 +120,27 @@ public class EditViewModel : ObservableObject
     }
 
 
+    public void RemoveCategoryFromDatabase()
+    {
+        if (SelectedCategory is not null)
+        {
+             _categoryManager.RemoveCategory(SelectedCategory);
+             ClearFields();
+        }
+    }
+
+    public void RemoveCategoryFromQuestion()
+    {
+        if (SelectedCategoryForAQuestion is not null)
+        {
+            CategoriesForAQuestion.Remove(SelectedCategoryForAQuestion);
+            SaveEdit();
+        }
+    }
+
     public void CheckButtons()
     {
-        if (SelectedQuestion == null)
+        if (SelectedQuestion is null)
         {
             CanSaveOrRemove = false;
         }
@@ -135,7 +157,9 @@ public class EditViewModel : ObservableObject
     {
         AllQuestions = _questionManager.GetAllQuestionsFromMongoDb();
 
-        AllCategories = _quizManger.GetAllCategories();
+        AllCategories = new ObservableCollection<Category>(_categoryManager.GetAllCategories());
+
+        CategoriesForAQuestion = new ObservableCollection<Category>();
     }
 
     private IEnumerable<QuestionModel> _allQuestions;
@@ -170,9 +194,9 @@ public class EditViewModel : ObservableObject
         set
         {
             SetProperty(ref _selectedCategory, value);
-            if (SelectedCategory != null)
+            if (SelectedCategory is not null)
             {
-                if (CategoriesForAQuestion != null)
+                if (CategoriesForAQuestion is not null)
                 {
                     foreach (var question in CategoriesForAQuestion!)
                     {
@@ -183,7 +207,7 @@ public class EditViewModel : ObservableObject
                     }
                 }
 
-                CategoriesForAQuestion.Add(SelectedCategory);
+                CategoriesForAQuestion!.Add(SelectedCategory);
             }
         }
     }
@@ -194,6 +218,17 @@ public class EditViewModel : ObservableObject
     {
         get { return _categoriesForAQuestion; }
         set { SetProperty(ref _categoriesForAQuestion, value); }
+    }
+
+    private Category _selectedCategoryForAQuestion;
+
+    public Category SelectedCategoryForAQuestion
+    {
+        get { return _selectedCategoryForAQuestion; }
+        set
+        {
+            SetProperty(ref _selectedCategoryForAQuestion, value);
+        }
     }
 
     private string _categoryName;
@@ -208,33 +243,22 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private IEnumerable<Category> _allCategories;
+    private ObservableCollection<Category> _allCategories;
 
-    public IEnumerable<Category> AllCategories
+    public ObservableCollection<Category> AllCategories
     {
         get { return _allCategories; }
         set { SetProperty(ref _allCategories, value); }
     }
 
 
+    private string _removeCategoryButton = String.Empty;
 
-
-    //private string _quizTitle;
-
-    //public string QuizTitle
-    //{
-    //    get { return _quizTitle; }
-    //    set
-    //    {
-    //        SetProperty(ref _quizTitle, value);
-    //        SetList();
-            
-            
-
-    //    }
-    //}
-
-   
+    public string RemoveCategoryButton
+    {
+        get { return _removeCategoryButton; }
+        set { SetProperty(ref _removeCategoryButton, value); }
+    }
 
 
     public void Correct()
@@ -256,23 +280,11 @@ public class EditViewModel : ObservableObject
     }
 
 
-    //private IEnumerable<QuestionModel> _questionList;
-
-    //public IEnumerable<QuestionModel> QuestionList
-    //{
-    //    get { return _questionList; }
-    //    set
-    //    {
-    //        SetProperty(ref _questionList, value);
-    //        FillInBoxes();
-    //    }
-    //}
-
     public void FillInBoxes()
     {
 
 
-        if (SelectedQuestion != null)
+        if (SelectedQuestion is not null)
         {
             QuestionStatment = SelectedQuestion.Statement;
 
@@ -308,7 +320,7 @@ public class EditViewModel : ObservableObject
 
     public void CheckFields()
     {
-        if (SelectedQuestion == null)
+        if (SelectedQuestion is null)
         {
             CanSaveOrRemove = false;
 
@@ -360,6 +372,8 @@ public class EditViewModel : ObservableObject
         CorrectAnswerOne = false;
         CorrectAnswerTwo = false;
         CorrectAnswerThree = false;
+
+        LoadListView();
     }
 
     private bool _correctAnswerOne;

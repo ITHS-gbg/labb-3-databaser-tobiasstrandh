@@ -16,19 +16,21 @@ public class StartViewModel : ObservableObject
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
     private readonly QuestionManager _questionManager;
-    public StartViewModel( QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
+    private readonly CategoryManager _categoryManager;
+    public StartViewModel(QuizManger quizManger, QuestionManager questionManager, CategoryManager categoryManager, NavigationManager navigationManager)
     {
         _quizManger = quizManger;
         _navigationManager = navigationManager;
         _questionManager = questionManager;
-       
-        
+        _categoryManager = categoryManager;
 
-        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _questionManager,_navigationManager));
 
-        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new ChooseQuizViewModel(_quizManger, _questionManager,_navigationManager));
 
-        NavigateEditQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new EditViewModel(_quizManger, _questionManager,_navigationManager));
+        NavigateCreateQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new CreateQuizViewModel(_quizManger, _questionManager, _categoryManager, _navigationManager));
+
+        NavigatePlayQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new ChooseQuizViewModel(_quizManger, _questionManager, _categoryManager, _navigationManager));
+
+        NavigateEditQuizCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new EditViewModel(_quizManger, _questionManager,_categoryManager,_navigationManager));
     }
 
 

@@ -29,10 +29,6 @@ public class QuizManger
 
     private readonly IMongoCollection<QuizModel> _collectionQuiz;
 
-    private readonly IMongoCollection<QuestionModel> _collectionQuestion;
-
-    private readonly IMongoCollection<Category> _collectionQuestionCategory;
-
     public QuizManger()
     {
         var hostname = "localhost";
@@ -44,12 +40,7 @@ public class QuizManger
 
         _collectionQuiz = database.GetCollection<QuizModel>("quiz", new MongoCollectionSettings() { AssignIdOnInsert = true });
 
-        _collectionQuestion = database.GetCollection<QuestionModel>("question", new MongoCollectionSettings() { AssignIdOnInsert = true });
-
-        _collectionQuestionCategory = database.GetCollection<Category>("questionCategory", new MongoCollectionSettings() { AssignIdOnInsert = true });
     }
-
-    
 
     
 
@@ -85,122 +76,12 @@ public class QuizManger
         _collectionQuiz.UpdateOne(filter, update);
     }
 
-    public IEnumerable<QuizModel> GetQuizByCategories(Category category )
+    public IEnumerable<QuizModel> GetQuizByCategories(Category category)
     {
-        var filter2 = Builders<QuestionModel>.Filter.Eq("Category", category.Id);
 
-        var filter = Builders<QuizModel>.Filter.Eq("Id", category.Id);
+        var filter = Builders<QuizModel>.Filter.ElemMatch(q => q.Questions, c => c.Category.Contains(category));
 
         return _collectionQuiz.Find(filter).ToEnumerable();
     }
-
-
-
-
-
-    public void CreateNewCategory(Category questionCategory)
-    {
-        _collectionQuestionCategory.InsertOne(questionCategory);
-    }
-
-    public IEnumerable<Category> GetAllCategories()
-    {
-        return _collectionQuestionCategory.Find(_ => true).ToEnumerable();
-    }
-
-
-    public IEnumerable<QuestionModel> GetQuestionsByCategories(object id)
-    {
-        
-
-        var filter = Builders<QuestionModel>.Filter.Eq("Category", id);
-
-        return _collectionQuestion.Find(filter).ToEnumerable();
-    }
-
-
-
-
-
-
-
-
-    public async Task JsonDefaultQuizSave()
-    {
-        var folderPath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TobiasQuizApp");
-
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-
-        var pathDefaultQuiz = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"TobiasQuizApp", $"tobbesquiz.json");
-
-        if (!File.Exists(pathDefaultQuiz))
-        {
-
-            var json = JsonSerializer.Serialize(CurrentQuiz, new JsonSerializerOptions() { WriteIndented = true });
-
-
-            await using StreamWriter sw = new StreamWriter(pathDefaultQuiz);
-
-
-            sw.WriteLine(json);
-
-        }
-
-
-    }
-
-    public async Task<List<string>> JsonTitleList()
-    {
-        var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"TobiasQuizApp"); 
-        string[] file = Directory.GetFiles(path, "*.json");
-
-        await Task.Delay(100);
-
-        for (int i = 0; i < file.Length; i++)
-        {
-            file[i] = Path.GetFileNameWithoutExtension(file[i]);
-        }
-
-        return new List<string>(file);
-
-    }
-
-    public async Task DownloadJson(string title)
-    {
-
-        await Task.Run(() =>
-        {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TobiasQuizApp", $"{title}.json");
-
-
-            if (File.Exists(path))
-            {
-                var text = string.Empty;
-                string? line = string.Empty;
-
-
-                using StreamReader sr = new StreamReader(path);
-
-                while ((line = sr.ReadLine()) != null)
-                {
-                    text += line;
-                }
-
-                CurrentQuiz = JsonSerializer.Deserialize<QuizModel>(text);
-
-
-
-            }
-        });
-
-
-    }
-
-
-    
 
 }

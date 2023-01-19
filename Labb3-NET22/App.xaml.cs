@@ -19,20 +19,22 @@ namespace Labb3_NET22
         private readonly NavigationManager _navigationManager;
         private readonly QuizManger _quizManger;
         private readonly QuestionManager _questionManager;
+        private readonly CategoryManager _categoryManager;
         public App()
         {
             _navigationManager = new NavigationManager();
             _quizManger = new QuizManger();
             _questionManager = new QuestionManager();
+            _categoryManager = new CategoryManager();
         }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
             
-            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager);
+            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager,_categoryManager, _navigationManager);
 
-            var mainWindow = new MainWindow() { DataContext = new MainViewModel(_navigationManager, _quizManger, _questionManager) };
+            var mainWindow = new MainWindow() { DataContext = new MainViewModel(_navigationManager, _quizManger, _questionManager, _categoryManager) };
 
             mainWindow.Show();
         }

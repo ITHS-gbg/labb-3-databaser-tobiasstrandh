@@ -16,20 +16,22 @@ public class ChooseQuizViewModel : ObservableObject
     private readonly NavigationManager _navigationManager;
     private readonly QuizManger _quizManger;
     private readonly QuestionManager _questionManager;
+    private readonly CategoryManager _categoryManager;
     public ICommand ReturnToStartViewCommand { get; }
     public ICommand GoToQuizViewCommand { get; }
 
-    public ChooseQuizViewModel(QuizManger quizManger, QuestionManager questionManager, NavigationManager navigationManager)
+    public ChooseQuizViewModel(QuizManger quizManger, QuestionManager questionManager, CategoryManager categoryManager ,NavigationManager navigationManager)
     {
         
         
         _navigationManager = navigationManager;
         _quizManger = quizManger;
         _questionManager = questionManager;
+        _categoryManager = categoryManager;
         LoadListView();
 
 
-        ReturnToStartViewCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager));
+        ReturnToStartViewCommand = new RelayCommand(() => _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _categoryManager, _navigationManager));
 
         GoToQuizViewCommand = new RelayCommand(() => GoToQuizView());
 
@@ -44,12 +46,12 @@ public class ChooseQuizViewModel : ObservableObject
         var amountQuestions = _quizManger.CurrentQuiz.Questions.ToList();
         if (amountQuestions.Count == 0)
         {
-            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _navigationManager);
+            _navigationManager.CurrentViewModel = new StartViewModel(_quizManger, _questionManager, _categoryManager, _navigationManager);
         }
 
         else
         {
-            _navigationManager.CurrentViewModel = new QuizViewModel(_quizManger, _questionManager, _navigationManager);
+            _navigationManager.CurrentViewModel = new QuizViewModel(_quizManger, _questionManager, _categoryManager,_navigationManager);
         }
 
     }
@@ -58,7 +60,7 @@ public class ChooseQuizViewModel : ObservableObject
     {
         AllQuiz = _quizManger.GetAllQuiz();
 
-        AllCategories = _quizManger.GetAllCategories();
+        AllCategories = _categoryManager.GetAllCategories();
 
     }
 
@@ -121,53 +123,53 @@ public class ChooseQuizViewModel : ObservableObject
     public void GetQuizByCategory()
     {
 
-        var allQuestions = _questionManager.GetAllQuestionsFromMongoDb().ToList();
-        var questions = allQuestions.ToList();
-        questions.Clear();
+        //var allQuestions = _questionManager.GetAllQuestionsFromMongoDb().ToList();
+        //var questions = allQuestions.ToList();
+        //questions.Clear();
 
         
-        foreach (var question in allQuestions)
-        {
-            foreach (var cat in question.Category)
-            {
-                if (cat.Id == SelectedCategory.Id)
-                {
-                    if (questions.Contains(question))
-                    {
-                        return;
-                    }
+        //foreach (var question in allQuestions)
+        //{
+        //    foreach (var cat in question.Category)
+        //    {
+        //        if (cat.Id == SelectedCategory.Id)
+        //        {
+        //            if (questions.Contains(question))
+        //            {
+        //                return;
+        //            }
 
-                    questions.Add(question);
-                }
-            }
-        }
+        //            questions.Add(question);
+        //        }
+        //    }
+        //}
 
 
 
-        ObservableCollection<QuizModel> QuizWithSelectedCategory = new ObservableCollection<QuizModel>();
+        //ObservableCollection<QuizModel> QuizWithSelectedCategory = new ObservableCollection<QuizModel>();
 
-        AllQuiz = _quizManger.GetAllQuiz();
+        //AllQuiz = _quizManger.GetAllQuiz();
 
-        foreach (var quiz in AllQuiz)
-        {
-            foreach (var question in quiz.Questions)
-            {
-                foreach (var q in questions)
-                {
-                    if (q.Id == question.Id )
-                    {
-                        if (!QuizWithSelectedCategory.Contains(quiz))
-                        {
-                            QuizWithSelectedCategory!.Add(quiz);
-                        }
+        //foreach (var quiz in AllQuiz)
+        //{
+        //    foreach (var question in quiz.Questions)
+        //    {
+        //        foreach (var q in questions)
+        //        {
+        //            if (q.Id == question.Id )
+        //            {
+        //                if (!QuizWithSelectedCategory.Contains(quiz))
+        //                {
+        //                    QuizWithSelectedCategory!.Add(quiz);
+        //                }
                           
-                    }
-                }
-            }
-        }
+        //            }
+        //        }
+        //    }
+        //}
 
         
-        AllQuiz = QuizWithSelectedCategory;
+        AllQuiz = _quizManger.GetQuizByCategories(SelectedCategory);
         
     }
 

@@ -29,7 +29,7 @@
 
 
         <ListView
-            
+            Grid.Row="1"
             Grid.RowSpan="3"
             Grid.Column="0"
             Grid.ColumnSpan="1"
@@ -53,13 +53,13 @@
             Grid.Column="4"
             Margin="3"
             ItemsSource="{Binding CategoriesForAQuestion}"
-            SelectedItem="{Binding QuizTitle}" >
+            SelectedItem="{Binding SelectedCategoryForAQuestion}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn
-                        Width="100"
+                        Width="120"
                         DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
-                        Header="Selected Category" />
+                        Header="Category for question" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -69,18 +69,16 @@
             Grid.RowSpan="2"
             Grid.Column="4"
             Margin="3"
-            ItemsSource="{Binding AllCategories}"
-            SelectedItem="{Binding SelectedCategory}" >
+            ItemsSource="{Binding AllCategories, UpdateSourceTrigger=PropertyChanged}"
+            SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn
-                        DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
-                        Header="Category" />
+                    <GridViewColumn DisplayMemberBinding="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}" Header="Category" />
                 </GridView>
             </ListView.View>
         </ListView>
 
-<TextBlock
+        <TextBlock
             Grid.Column="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
@@ -160,7 +158,7 @@
             Check in the box for right answer
         </TextBlock>
 
-       
+
 
 
 
@@ -195,6 +193,7 @@
 
         <TextBox
             Grid.Row="4"
+            Grid.Column="3"
             Margin="5"
             FontSize="18"
             IsEnabled="{Binding CanFillQuestionBoxes}"
@@ -203,22 +202,45 @@
 
         <Button
             Grid.Row="5"
+            Grid.Column="3"
             Margin="15"
-            IsEnabled="{Binding CanSaveNewCategory}"
             Command="{Binding SaveNewCategoryCommand}"
             FontSize="12"
-        >
+            IsEnabled="{Binding CanSaveNewCategory}">
             Create New Category
         </Button>
+
+        <StackPanel
+            Grid.Row="5"
+            Grid.Column="4"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+
+            <Button
+                Margin="5"
+                Command="{Binding RemoveCategoryFromQuestionCommand}"
+                Content="Remove category from question"
+                FontSize="10"
+                IsEnabled="{Binding}" />
+
+            <Button
+                Margin="5"
+                Command="{Binding RemoveCategoryCommand}"
+                Content="Remove category from datebase"
+                FontSize="10"
+                IsEnabled="{Binding}" />
+
+        </StackPanel>
+
+
 
         <Button
             Grid.Row="5"
             Grid.Column="2"
             Margin="15"
-            IsEnabled="{Binding CanSaveOrRemove}"
             Command="{Binding SaveEditCommand}"
             FontSize="16"
-            >
+            IsEnabled="{Binding CanSaveOrRemove}">
             Save Edit
         </Button>
 
@@ -226,29 +248,24 @@
             Grid.Row="5"
             Grid.Column="1"
             Margin="15"
-            IsEnabled="{Binding CanSaveNewQuestion}"
             Command="{Binding NewQuestionCommand}"
             FontSize="14"
-            >
-            Save New Question 
+            IsEnabled="{Binding CanSaveNewQuestion}">
+            Save New Question
         </Button>
 
-        
+
 
         <Button
-            Grid.Row="5"
-            Grid.Column="3"
+            Grid.Row="4"
             Margin="15"
             Command="{Binding RemoveCommand}"
             FontSize="16"
-            IsEnabled="{Binding CanSaveOrRemove}"
-            >
+            IsEnabled="{Binding CanSaveOrRemove}">
             Remove Question
         </Button>
 
         <Button
-            Grid.Row="5"
-            Grid.Column="4"
             Margin="15"
             Command="{Binding GoBackToStartCommand}"
             FontSize="16">
@@ -256,8 +273,7 @@
         </Button>
 
         <Button
-            Grid.Row="4"
-            Grid.Column="2"
+            Grid.Row="5"
             Margin="15"
             Command="{Binding ClearFieldsCommand}"
             FontSize="16">
