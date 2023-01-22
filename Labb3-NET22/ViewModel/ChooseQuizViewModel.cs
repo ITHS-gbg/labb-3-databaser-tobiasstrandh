@@ -19,6 +19,7 @@ public class ChooseQuizViewModel : ObservableObject
     private readonly CategoryManager _categoryManager;
     public ICommand ReturnToStartViewCommand { get; }
     public ICommand GoToQuizViewCommand { get; }
+    public ICommand ResetCategoryCommand { get; }
 
     public ChooseQuizViewModel(QuizManger quizManger, QuestionManager questionManager, CategoryManager categoryManager ,NavigationManager navigationManager)
     {
@@ -35,6 +36,7 @@ public class ChooseQuizViewModel : ObservableObject
 
         GoToQuizViewCommand = new RelayCommand(() => GoToQuizView());
 
+        ResetCategoryCommand = new RelayCommand(() => LoadListView());
     }
 
     public void GoToQuizView()
@@ -58,11 +60,12 @@ public class ChooseQuizViewModel : ObservableObject
 
     public void LoadListView()
     {
-        AllQuiz = _quizManger.GetAllQuiz();
-
         AllCategories = _categoryManager.GetAllCategories();
 
+        AllQuiz = _quizManger.GetAllQuiz();
+
     }
+
 
 
     private IEnumerable<QuizModel> _allQuiz = null!;

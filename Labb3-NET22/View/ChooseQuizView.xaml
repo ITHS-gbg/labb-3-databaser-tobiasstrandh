@@ -82,6 +82,10 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
+        <Button
+            Margin="35"
+            Command="{Binding ResetCategoryCommand}">
+            Reset
+        </Button>
     </Grid>
 </UserControl>

@@ -39,7 +39,7 @@
             Grid.Column="1"
             Command="{Binding NavigateCreateQuizCommand}"
             FontSize="36">
-            New Quiz
+            New/Edit Quiz
         </Button>
 
         <Button
@@ -47,7 +47,7 @@
             Grid.Column="1"
             Command="{Binding NavigateEditQuizCommand}"
             FontSize="36">
-            Edit Quiz
+            New/Edit Question
         </Button>
 
     </Grid>
