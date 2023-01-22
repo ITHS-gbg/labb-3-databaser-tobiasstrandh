@@ -125,7 +125,7 @@ public class QuizViewModel : ObservableObject
 
     public int CorrrectAnswer { get; set; }
 
-    private string _questionStatment;
+    private string _questionStatment = null!;
 
     public string QuestionStatment
     {
@@ -140,7 +140,7 @@ public class QuizViewModel : ObservableObject
         }
     }
 
-    private string _questionAnswerOne;
+    private string _questionAnswerOne = null!;
 
     public string QuestionAnswerOne
     {
@@ -151,7 +151,7 @@ public class QuizViewModel : ObservableObject
         }
     }
 
-    private string _questionAnswerTwo;
+    private string _questionAnswerTwo = null!;
 
     public string QuestionAnswerTwo
     {
@@ -162,7 +162,7 @@ public class QuizViewModel : ObservableObject
         }
     }
 
-    private string _questionAnswerThree;
+    private string _questionAnswerThree = null!;
 
     public string QuestionAnswerThree
     {

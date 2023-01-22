@@ -13,7 +13,7 @@ namespace Labb3_NET22.Managers;
 
 public class QuizManger
 {
-    private QuizModel _quizModel;
+    private QuizModel _quizModel = null!;
 
     public QuizModel CurrentQuiz
     {

@@ -65,7 +65,7 @@ public class ChooseQuizViewModel : ObservableObject
     }
 
 
-    private IEnumerable<QuizModel> _allQuiz;
+    private IEnumerable<QuizModel> _allQuiz = null!;
 
     public IEnumerable<QuizModel> AllQuiz
     {
@@ -77,7 +77,7 @@ public class ChooseQuizViewModel : ObservableObject
     }
 
 
-    private QuizModel _selectedQuiz;
+    private QuizModel _selectedQuiz = null!;
 
     public QuizModel SelectedQuiz
     {
@@ -100,7 +100,7 @@ public class ChooseQuizViewModel : ObservableObject
         }
     }
 
-    private IEnumerable<Category> _allCategories;
+    private IEnumerable<Category> _allCategories = null!;
 
     public IEnumerable<Category> AllCategories
     {
@@ -108,7 +108,7 @@ public class ChooseQuizViewModel : ObservableObject
         set { SetProperty(ref _allCategories, value); }
     }
 
-    private Category _selectedCategory;
+    private Category _selectedCategory = null!;
 
     public Category SelectedCategory
     {
@@ -122,12 +122,14 @@ public class ChooseQuizViewModel : ObservableObject
 
     public void GetQuizByCategory()
     {
+        AllQuiz = _quizManger.GetQuizByCategories(SelectedCategory);
+
 
         //var allQuestions = _questionManager.GetAllQuestionsFromMongoDb().ToList();
         //var questions = allQuestions.ToList();
         //questions.Clear();
 
-        
+
         //foreach (var question in allQuestions)
         //{
         //    foreach (var cat in question.Category)
@@ -162,15 +164,12 @@ public class ChooseQuizViewModel : ObservableObject
         //                {
         //                    QuizWithSelectedCategory!.Add(quiz);
         //                }
-                          
+
         //            }
         //        }
         //    }
         //}
 
-        
-        AllQuiz = _quizManger.GetQuizByCategories(SelectedCategory);
-        
     }
 
 }

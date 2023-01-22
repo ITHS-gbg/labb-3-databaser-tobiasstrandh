@@ -56,11 +56,14 @@ public class EditViewModel : ObservableObject
 
     public void NewQuestion()
     {
+        
+        
+
         Correct();
 
-        var QuizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
+        var quizAnswers = new string[] { QuestionAnswerOne, QuestionAnswerTwo, QuestionAnswerThree };
 
-        var newQuestion = new QuestionModel(QuestionStatment, QuizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
+        var newQuestion = new QuestionModel(QuestionStatment, quizAnswers, QuestionCorrectAnswer){Category = CategoriesForAQuestion};
 
         _questionManager.MongoDbSaveQuestion(newQuestion);
 
@@ -162,7 +165,7 @@ public class EditViewModel : ObservableObject
         CategoriesForAQuestion = new ObservableCollection<Category>();
     }
 
-    private IEnumerable<QuestionModel> _allQuestions;
+    private IEnumerable<QuestionModel> _allQuestions = null!;
 
     public IEnumerable<QuestionModel> AllQuestions
     {
@@ -173,7 +176,7 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private QuestionModel _selectedQuestion;
+    private QuestionModel _selectedQuestion = null!;
 
     public QuestionModel SelectedQuestion
     {
@@ -186,7 +189,7 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private Category _selectedCategory;
+    private Category _selectedCategory = null!;
 
     public Category SelectedCategory
     {
@@ -220,7 +223,7 @@ public class EditViewModel : ObservableObject
         set { SetProperty(ref _categoriesForAQuestion, value); }
     }
 
-    private Category _selectedCategoryForAQuestion;
+    private Category _selectedCategoryForAQuestion = null!;
 
     public Category SelectedCategoryForAQuestion
     {
@@ -231,7 +234,7 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private string _categoryName;
+    private string _categoryName = null!;
 
     public string CategoryName
     {
@@ -243,7 +246,7 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private ObservableCollection<Category> _allCategories;
+    private ObservableCollection<Category> _allCategories = null!;
 
     public ObservableCollection<Category> AllCategories
     {
@@ -429,7 +432,7 @@ public class EditViewModel : ObservableObject
         }
     }
 
-    private string _questionStatment;
+    private string _questionStatment = null!;
 
     public string QuestionStatment
     {

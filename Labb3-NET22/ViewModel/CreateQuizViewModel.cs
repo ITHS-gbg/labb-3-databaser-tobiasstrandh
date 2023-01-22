@@ -136,7 +136,7 @@ public class CreateQuizViewModel : ObservableObject
         set { SetProperty(ref _searchName, value); }
     }
 
-    private IEnumerable<QuestionModel> _allQuestions;
+    private IEnumerable<QuestionModel> _allQuestions = null!;
 
     public IEnumerable<QuestionModel> AllQuestions
     {
@@ -147,7 +147,7 @@ public class CreateQuizViewModel : ObservableObject
         }
     }
 
-    private IEnumerable<QuizModel> _allQuiz;
+    private IEnumerable<QuizModel> _allQuiz = null!;
 
     public IEnumerable<QuizModel> AllQuiz
     {
@@ -155,7 +155,7 @@ public class CreateQuizViewModel : ObservableObject
         set { SetProperty(ref _allQuiz, value); }
     }
 
-    private QuizModel _selectedQuiz;
+    private QuizModel _selectedQuiz = null!;
 
     public QuizModel SelectedQuiz
     {
@@ -167,7 +167,7 @@ public class CreateQuizViewModel : ObservableObject
         }
     }
 
-    private QuestionModel _selectedQuestionFromQuiz;
+    private QuestionModel _selectedQuestionFromQuiz = null!;
 
     public QuestionModel SelectedQuestionFromQuiz
     {
@@ -179,7 +179,7 @@ public class CreateQuizViewModel : ObservableObject
         }
     }
 
-    private IEnumerable<Category> _allCategories;
+    private IEnumerable<Category> _allCategories = null!;
 
     public IEnumerable<Category> AllCategories
     {
@@ -187,7 +187,7 @@ public class CreateQuizViewModel : ObservableObject
         set { SetProperty(ref _allCategories, value); }
     }
 
-    private Category _selectedCategory;
+    private Category _selectedCategory = null!;
 
     public Category SelectedCategory
     {
@@ -213,7 +213,7 @@ public class CreateQuizViewModel : ObservableObject
         GetAllQuestionsAndQuiz();
     }
 
-    private Category _category;
+    private Category _category = null!;
 
     public Category Category
     {
@@ -221,7 +221,7 @@ public class CreateQuizViewModel : ObservableObject
         set { SetProperty(ref _category, value); }
     }
 
-    private string _quizName;
+    private string _quizName = null!;
 
     public string QuizName
     {
